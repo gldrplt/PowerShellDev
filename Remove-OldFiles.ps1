@@ -40,7 +40,8 @@ function Remove-OldFiles {	# Remove files based on age/type
 	}
 
     $timestamp = Get-Date -Format "ddd MM/dd/yyyy HH:mm:sstt"
-    	
+
+# Get files that match criteria    	
 	if ($PSBoundParameters.ContainsKey('Days')) {
 		$files = Get-ChildItem -Path $Folder -File -Filter $Filter |
 			Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$Days) } |
@@ -52,24 +53,28 @@ function Remove-OldFiles {	# Remove files based on age/type
 	}
 
     if ($files) {
-        $logcnt=$files.Count
+        $logcnt = $files.Count
     }
     else {
-        $logcnt=0
-		if ($PSBoundParameters.ContainsKey('Days')) {
-			$msg = "`n$timestamp No files of type $Filter older than $Days days found in $Folder`n"
-		}
-		else {
-			$msg = "`n$timestamp No files of type $Filter found in $Folder`n"
-		}
-        Write-Information "$msg"
-        return $logcnt
-    }
-
-	# create message for log file
-	$msg = "Folder : $Folder `nFilter : $Filter"
+        $logcnt = 0
+	}
+	
+# create message for log file
+	$msg = @"
+Folder : $Folder 
+Filter : $Filter
+"@
+	
 	if ($PSBoundParameters.ContainsKey('Days')) {
 		$msg = $msg + "`nRemove files older than $Days Days"
+	}
+	if ($logcnt -eq 0){	# if no files found
+		if ($PSBoundParameters.ContainsKey('Days')) {
+			$msg = $msg + "`nNo files of type $Filter older than $Days days found in $Folder`n"
+		}
+		else {
+			$msg = $msg + "`nNo files of type $Filter found in $Folder`n"
+		}
 	}
 	
     if ($Test) {
@@ -79,17 +84,23 @@ function Remove-OldFiles {	# Remove files based on age/type
     else {
         Write-Information "`n$timestamp Removing the following files`n"
 		Write-Information "$msg"
-	# Remove Files
-        $files | Remove-Item -Force
     }
 
-	# show files
-	$files |
+# show files
+	if ($files){
+		$files |
 		Sort-Object @{ Expression = { $_.LastWriteTime.Date } }, Name |
 		Select-Object Name, LastWriteTime |
 		Format-Table -AutoSize |
 		Out-String |
 		Write-Information
+	}
+
+# Remove files
+	if ($files -and -not $Test) {
+        $files | Remove-Item -Force
+	}
 	
+# Return $logcnt	
     return $logcnt
 }
