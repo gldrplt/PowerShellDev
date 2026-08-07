@@ -33,6 +33,12 @@ function Remove-OldFiles {	# Remove files based on age/type
         [switch]$Test        
     )
 
+# Initialize color text
+	$Green  = "`e[32m"
+	$Yellow = "`e[33m"
+	$Red    = "`e[31m"
+	$Reset  = "`e[0m"
+
 # Check Folder exists
 	if (-not (Test-Path $Folder -PathType Container)) {
 		Write-Information "Folder does not exist: $Folder"
@@ -41,15 +47,20 @@ function Remove-OldFiles {	# Remove files based on age/type
 
     $timestamp = Get-Date -Format "ddd MM/dd/yyyy HH:mm:sstt"
 
-# Get files that match criteria    	
+# Get files that match criteria
+# Force $files to be an array using @(...)
 	if ($PSBoundParameters.ContainsKey('Days')) {
-		$files = Get-ChildItem -Path $Folder -File -Filter $Filter |
-			Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$Days) } |
-			Sort-Object LastWriteTime
+		$files = @(
+			Get-ChildItem -Path $Folder -File -Filter $Filter |
+				Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-$Days) } |
+				Sort-Object LastWriteTime
+		)
 	}
 	else {
-		$files = Get-ChildItem -Path $Folder -File -Filter $Filter |
-			Sort-Object LastWriteTime
+		$files = @(
+			Get-ChildItem -Path $Folder -File -Filter $Filter |
+				Sort-Object LastWriteTime
+		)
 	}
 
     if ($files) {
@@ -70,10 +81,10 @@ Filter : $Filter
 	}
 	if ($logcnt -eq 0){	# if no files found
 		if ($PSBoundParameters.ContainsKey('Days')) {
-			$msg = $msg + "`nNo files of type $Filter older than $Days days found in $Folder`n"
+			$msg = $msg + "`n`nNo files of type $Filter older than $Days days found in $Folder`n"
 		}
 		else {
-			$msg = $msg + "`nNo files of type $Filter found in $Folder`n"
+			$msg = $msg + "`n`nNo files of type $Filter found in $Folder`n"
 		}
 	}
 	
@@ -104,3 +115,4 @@ Filter : $Filter
 # Return $logcnt	
     return $logcnt
 }
+
