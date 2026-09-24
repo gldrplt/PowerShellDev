@@ -90,5 +90,3 @@ function List-Functions {	# List user defined functions
 
 	Write-Host
 }
-
-Set-Alias listf List-Functions

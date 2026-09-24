@@ -8,10 +8,11 @@ Remove files from $Folder based on age and/or file type.
 
 .DESCRIPTION
 Options:
-    -Folder : Path to folder containing files to remove
-    -Days   : Remove files older than this number of days (default 30)
-    -Filter : File type filter (default *.*)
-    -Test   : Test mode, do not delete files
+    -Folder  : Path to folder containing files to remove
+    -Days    : Remove files older than this number of days (default 30)
+    -Filter  : File type filter (default *.*)
+	-LogFile : Log file to write to (default .\default.log)
+    -Test    : Test mode, do not delete files
 
 Alias: rof
 
@@ -30,18 +31,13 @@ function Remove-OldFiles {	# Remove files based on age/type
         [string]$Folder,
         [int]$Days = 30,
 		[string]$Filter = "*.*",
-        [switch]$Test        
+        [string]$LogFile = ".\default.log",
+		[switch]$Test        
     )
-
-# Initialize color text
-	$Green  = "`e[32m"
-	$Yellow = "`e[33m"
-	$Red    = "`e[31m"
-	$Reset  = "`e[0m"
 
 # Check Folder exists
 	if (-not (Test-Path $Folder -PathType Container)) {
-		Write-Information "Folder does not exist: $Folder"
+		Add-Content -Path $LogFile -Value "Folder does not exist: $Folder"
 		return
 	}
 
@@ -69,6 +65,11 @@ function Remove-OldFiles {	# Remove files based on age/type
     else {
         $logcnt = 0
 	}
+
+# Clear log
+# Force UTF-8 encoding instead of UTF-16
+#"" | Set-Content -Path $LogFile -Encoding utf8
+
 	
 # create message for log file
 	$msg = @"
@@ -89,22 +90,25 @@ Filter : $Filter
 	}
 	
     if ($Test) {
-        Write-Information "`n$timestamp Remove-OldFiles running in Test Mode...`n"
-		Write-Information "$msg"
+        $msg2 = "`n$timestamp Remove-OldFiles running in Test Mode...`n"
+		$msg2 = (Color-Text "$msg2" "Yellow")
     }
     else {
-        Write-Information "`n$timestamp Removing the following files`n"
-		Write-Information "$msg"
+        $msg2 = "`n$timestamp Removing the following files`n"
+		$msg2 = (Color-Text "$msg2" "Green")
     }
+	Add-Content -Path $LogFile -Value $msg2
+	Add-Content -Path $LogFile -Value $msg
 
 # show files
 	if ($files){
-		$files |
-		Sort-Object @{ Expression = { $_.LastWriteTime.Date } }, Name |
-		Select-Object Name, LastWriteTime |
-		Format-Table -AutoSize |
-		Out-String |
-		Write-Information
+		$msg3 =
+			$files |
+			Sort-Object @{ Expression = { $_.LastWriteTime.Date } }, Name |
+			Select-Object Name, LastWriteTime |
+			Format-Table -AutoSize |
+			Out-String
+		Add-Content -Path $LogFile -Value $msg3
 	}
 
 # Remove files

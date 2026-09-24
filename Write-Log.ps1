@@ -25,11 +25,15 @@ function Write-Log {    # Write log message with optional color and timestamp
         'Cyan'    { $PSStyle.Foreground.Cyan }
         'Magenta' { $PSStyle.Foreground.Magenta }
         'Gray'    { $PSStyle.Foreground.BrightBlack }
-        default   { '' }
+        default   { $false }
     }
 
-    $line = "{0}{1}{2}{3}" -f `
-        $timestamp, $prefix, $Message, $PSStyle.Reset
-
+    if ($prefix) {
+        $line = "{0}{1}{2}{3}" -f `
+            $timestamp, $prefix, $Message, $PSStyle.Reset
+        }
+    else {
+        $line = $Message
+    }
     Add-Content -Path $LogFile -Value $line
 }
