@@ -46,8 +46,8 @@ function List-Functions {	# List user defined functions
 		Sort-Object Function |
 		Format-Table Function, Comment -AutoSize    
 
-#	functions from c:\projects\dev	
-	$Tgt = "C:\Projects\Dev"
+#	functions from c:\projects\dev\functions
+	$Tgt = "C:\Projects\Dev\Functions"
 	Write-Host "`Functions from $Tgt\*.ps1" -ForegroundColor yellow
 
 	Get-ChildItem $Tgt\*.ps1 |

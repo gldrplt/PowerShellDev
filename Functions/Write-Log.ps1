@@ -12,11 +12,13 @@ function Write-Log {    # Write log message with optional color and timestamp
 	
 	)
 	
+    # Generate Timestamp if TimeStampFormat is provided
     $timestamp = $null
 	if ($TimeStampFormat){
 		$timestamp = Get-Date -Format $TimeStampFormat
 	}
 	
+    # Check if valid color is provided
     $prefix = switch ($Color) {
         'Red'     { $PSStyle.Foreground.Red }
         'Green'   { $PSStyle.Foreground.Green }
@@ -28,12 +30,13 @@ function Write-Log {    # Write log message with optional color and timestamp
         default   { $false }
     }
 
-    if ($prefix) {
-        $line = "{0}{1}{2}{3}" -f `
-            $timestamp, $prefix, $Message, $PSStyle.Reset
+    if ($prefix) {      # If a color is specified, format the log line with color
+        $line = "{0}{1} {2}{3}" -f `
+            $prefix, $timestamp, $Message, $PSStyle.Reset
         }
-    else {
-        $line = $Message
+    else {              # If no color is specified, format the log line without color
+        $line = "{0} {1}" -f `
+        $timestamp, $Message
     }
     Add-Content -Path $LogFile -Value $line
 }

@@ -75,6 +75,7 @@ function Remove-OldFiles {	# Remove files based on age/type
 	$msg = @"
 Folder : $Folder 
 Filter : $Filter
+Count  : $logcnt Files
 "@
 	
 	if ($PSBoundParameters.ContainsKey('Days')) {
@@ -91,7 +92,7 @@ Filter : $Filter
 	
     if ($Test) {
         $msg2 = "`n$timestamp Remove-OldFiles running in Test Mode...`n"
-		$msg2 = (Color-Text "$msg2" "Yellow")
+		$msg2 = (Color-Text "$msg2" "Blue")
     }
     else {
         $msg2 = "`n$timestamp Removing the following files`n"
