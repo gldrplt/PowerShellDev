@@ -5,6 +5,12 @@ function Select-File { # Select File with Windows Exporer
 # $file = Select-File -InitialDirectory "E:\Picture Library"
 # $files = Select-File -Filter "JPEG Files (*.jpg)|*.jpg" -MultiSelect
 
+# $files properties
+# $files.FullName
+# $files.Name
+# $files.Length
+# $files.DirectoryName
+
     param(
         [string]$InitialDirectory = (Get-Location).Path,
         [string]$Filter = "All Files (*.*)|*.*",
@@ -15,6 +21,7 @@ function Select-File { # Select File with Windows Exporer
     Add-Type -AssemblyName System.Windows.Forms
 
     $dialog = [System.Windows.Forms.OpenFileDialog]::new()
+	
     $dialog.Title = $Title
     $dialog.InitialDirectory = $InitialDirectory
     $dialog.Filter = $Filter
@@ -23,9 +30,13 @@ function Select-File { # Select File with Windows Exporer
 
     if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
         # $dialog.FileName
-        $file = $dialog.FileNames
-		return Get-Item -LiteralPath $dialog.FileNames
+        #$file = $dialog.FileNames
+		#return Get-Item -LiteralPath $dialog.FileNames
         #return ,$file	# always return an array
+		
+		return $dialog.FileNames | ForEach-Object {
+			Get-Item -LiteralPath $_
+		}
     }
 }
 
