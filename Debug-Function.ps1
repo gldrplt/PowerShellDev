@@ -4,7 +4,7 @@
 param()
 
 Clear-Host
-Write-Host "Debug PowerShell Function - Select Function File`n" -ForegroundColor Cyan
+Write-Host "Debug PowerShell Script`nSet breakpoint(s) in function being debugged`n`n- Select Function File`n" -ForegroundColor Cyan
 # ------------------------------------------------------------
 # Get the function file
 # ------------------------------------------------------------
@@ -111,6 +111,7 @@ foreach ($Parameter in $Command.Parameters.Values) {
             'InformationVariable',
             'OutVariable',
             'OutBuffer',
+            'ProgressAction',
             'PipelineVariable'
         )) {
         continue
