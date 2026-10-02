@@ -1,10 +1,12 @@
 # Debug-Function.ps1
 
 [CmdletBinding()]
-param()
+param(
+    [switch]$Test
+)
 
 Clear-Host
-Write-Host "Debug PowerShell Script`nSet breakpoint(s) in function being debugged`n`n- Select Function File`n" -ForegroundColor Cyan
+Write-Host "Debug PowerShell Script`nSet breakpoint(s) in function being debugged`n`n- Select Function File to debug`n" -ForegroundColor Cyan
 # ------------------------------------------------------------
 # Get the function file
 # ------------------------------------------------------------
@@ -287,7 +289,7 @@ foreach ($Parameter in $Command.Parameters.Values) {
 # Display invocation
 # ------------------------------------------------------------
 
-Write-Host "`nCalling $FunctionName..." -ForegroundColor Cyan
+Write-Host "`nCalling $FunctionName ..." -ForegroundColor Cyan
 
 if ($Arguments.Count -gt 0) {
     Write-Host "Parameters:" -ForegroundColor DarkGray
